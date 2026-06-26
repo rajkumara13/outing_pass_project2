@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Login - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global and Login CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/login.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container animate-fade-in">
+        <div class="glass-card login-card">
+            <div class="login-header">
+                <div class="brand-icon" style="color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2);">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2>Security Login</h2>
+                <p>Sign in to monitor gate entries and exits</p>
+            </div>
+
+            <!-- Login form -->
+            <form action="login_process.php" method="POST" class="needs-validation" novalidate>
+                
+                <!-- Error Alert Container -->
+                <div id="error-alert-container"></div>
+
+                <!-- Username Input -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required autocomplete="username">
+                    <label for="username"><i class="fa-solid fa-user-shield me-2"></i>Security Username</label>
+                    <div class="invalid-feedback">Please enter your username.</div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-floating mb-4">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+                    <label for="password"><i class="fa-solid fa-key me-2"></i>Password</label>
+                    <div class="invalid-feedback">Please enter your password.</div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3" style="background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Login to Console
+                </button>
+
+                <!-- Back to Home -->
+                <div class="login-footer">
+                    <a href="../index.html"><i class="fa-solid fa-arrow-left me-2"></i>Back to Portal Selection</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <script>
+        // Check for URL query params to display alerts
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            let errorMsg = 'An error occurred.';
+            let isSuccess = false;
+            
+            if (error === 'invalid') {
+                errorMsg = 'Invalid username or password.';
+            } else if (error === 'loggedout') {
+                errorMsg = 'Successfully logged out.';
+                isSuccess = true;
+            } else if (error === 'unauthorized') {
+                errorMsg = 'Please log in to access the dashboard.';
+            }
+            
+            const alertClass = isSuccess ? 'alert-success border-success text-light' : 'alert-danger border-danger text-light';
+            const iconClass = isSuccess ? 'fa-circle-check text-success' : 'fa-triangle-exclamation text-danger';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass} bg-opacity-10 alert-dismissible fade show mb-3" role="alert">
+                    <i class="fa-solid ${iconClass} me-2"></i>${errorMsg}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            document.getElementById('error-alert-container').innerHTML = alertHtml;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hostel Outpass Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="css/all.min.css" rel="stylesheet">
+    <!-- Global CSS Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .portal-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .portal-title {
+            font-size: 2.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .portal-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .module-card {
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .module-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            margin-bottom: 1.5rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* Specific card colorings */
+        .outing-card .module-icon-wrapper {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .homepass-card .module-icon-wrapper {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .security-card .module-icon-wrapper {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .admin-card .module-icon-wrapper {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .module-card:hover .module-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .outing-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
+        }
+
+        .homepass-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.15);
+        }
+
+        .security-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+        }
+
+        .admin-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .module-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .module-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.75rem;
+            flex-grow: 1;
+        }
+
+        .btn-module {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .outing-btn {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #047857 100%);
+            border: none;
+            color: white;
+        }
+        .outing-btn:hover {
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .homepass-btn {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #b45309 100%);
+            border: none;
+            color: white;
+        }
+        .homepass-btn:hover {
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            color: white;
+        }
+
+        .security-btn {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+        }
+        .security-btn:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+            border: none;
+            color: white;
+        }
+        .admin-btn:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container portal-container">
+        <div class="text-center mb-5 animate-fade-in">
+            <div class="d-inline-flex align-items-center justify-content-center mb-3">
+                <i class="fa-solid fa-hotel fa-3x text-indigo-400" style="color: #818cf8; text-shadow: 0 0 20px rgba(129, 140, 248, 0.4);"></i>
+            </div>
+            <h1 class="portal-title">STUDENT HOSTEL OUTPASS SYSTEM</h1>
+            <p class="portal-subtitle">Welcome to the digital outpass management portal. Select a module below to get started or manage access records.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center animate-fade-in" style="animation-delay: 0.2s;">
+            <!-- Security Module -->
+            <div class="col-md-6 col-lg-5">
+                <div class="glass-card module-card security-card">
+                    <div class="module-icon-wrapper">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="module-title">Security Portal</h3>
+                    <p class="module-desc">Access gate controls to scan QR codes for outings and home passes, search student status, and view logs.</p>
+                    <a href="security/login.html" class="btn btn-module security-btn">Security Login</a>
+                </div>
+            </div>
+
+            <!-- Admin Module -->
+            <div class="col-md-6 col-lg-5">
+                <div class="glass-card module-card admin-card">
+                    <div class="module-icon-wrapper">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <h3 class="module-title">Admin Control</h3>
+                    <p class="module-desc">Access admin dashboard to manage student records, approve home pass requests, and print activity reports.</p>
+                    <a href="admin/login.html" class="btn btn-module admin-btn">Admin Login</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5 text-muted animate-fade-in" style="font-size: 0.85rem; animation-delay: 0.4s;">
+            <p>&copy; 2026 Student Hostel Outpass Management System. All Rights Reserved.</p>
+            <p class="mt-1">
+                Database not initialized? Run <a href="config/setup.php" class="text-indigo-400 text-decoration-underline" style="color: #818cf8;">Database Installer</a>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

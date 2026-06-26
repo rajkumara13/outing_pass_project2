@@ -1,0 +1,274 @@
+/* dashboard.css - Custom Stylesheet for Dashboards */
+
+/* Layout structure */
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar navigation */
+.sidebar {
+    width: 260px;
+    background: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    transition: all var(--transition-speed) ease;
+}
+
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2rem;
+    transition: all var(--transition-speed) ease;
+}
+
+/* Sidebar lists */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 auto 0;
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.nav-link-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all var(--transition-speed) ease;
+}
+
+.nav-link-custom:hover, .nav-link-custom.active {
+    color: var(--text-primary);
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding-left: 1.25rem;
+}
+
+.nav-link-custom i {
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-user {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Stats Cards */
+.stat-card {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-blue);
+    opacity: 0.7;
+}
+
+.stat-card.total::after { background: var(--accent-blue); }
+.stat-card.inside::after { background: var(--accent-green); }
+.stat-card.outside::after { background: var(--accent-red); }
+.stat-card.pending::after { background: var(--accent-yellow); }
+
+.stat-icon {
+    font-size: 2.25rem;
+    opacity: 0.8;
+}
+
+.stat-card.total .stat-icon { color: var(--accent-blue); }
+.stat-card.inside .stat-icon { color: var(--accent-green); }
+.stat-card.outside .stat-icon { color: var(--accent-red); }
+.stat-card.pending .stat-icon { color: var(--accent-yellow); }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Profile photo slot */
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+.student-avatar-lg {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+}
+
+.qr-code-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    background: white;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* Activity Logs List */
+.log-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.log-item:last-child {
+    border-bottom: none;
+}
+
+.log-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-action {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.log-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.log-user {
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+
+/* Responsive adjustment */
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 80px;
+        padding: 1rem 0.5rem;
+    }
+    
+    .sidebar .portal-brand span, 
+    .sidebar .nav-link-custom span,
+    .sidebar .sidebar-user span {
+        display: none;
+    }
+    
+    .sidebar .nav-link-custom {
+        justify-content: center;
+        padding: 0.8rem;
+    }
+    
+    .main-content {
+        margin-left: 80px;
+        padding: 1.5rem;
+    }
+    
+    .sidebar-user {
+        text-align: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+    }
+    
+    .sidebar .portal-brand span, 
+    .sidebar .nav-link-custom span {
+        display: inline;
+    }
+    
+    .sidebar .nav-menu {
+        flex-direction: row;
+        margin: 1rem 0 0 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 0.5rem;
+    }
+    
+    .sidebar .nav-item {
+        margin-bottom: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}
+
+/* Print utility for reports */
+@media print {
+    .sidebar, .btn, .no-print {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .glass-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+    .table-custom th {
+        background-color: #f3f4f6 !important;
+        color: black !important;
+        border-bottom: 2px solid #ccc !important;
+    }
+    .table-custom td {
+        border-bottom: 1px solid #ddd !important;
+        color: black !important;
+    }
+}

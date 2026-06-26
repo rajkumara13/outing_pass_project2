@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand">
+                <i class="fa-solid fa-hotel"></i>
+                <span>Outpass Admin</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link-custom">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view_students.php" class="nav-link-custom">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Students List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add_student.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="apply_homepass.php" class="nav-link-custom">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                        <span>Apply Home Pass</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.php" class="nav-link-custom">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.php" class="nav-link-custom">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Reports Panel</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-circle fa-2x"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sidebar-username">Admin</span>
+                        <span style="font-size: 0.75rem;">Administrator</span>
+                    </div>
+                </div>
+                <a href="logout.php" class="btn btn-outline-danger w-100 btn-confirm-delete" data-confirm-message="Are you sure you want to logout?">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Add New Student</h1>
+                    <p class="text-secondary mb-0">Register a student and generate their outpass QR code</p>
+                </div>
+                <a href="view_students.php" class="btn btn-secondary-custom">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+
+            <!-- Add student form card -->
+            <div class="glass-card p-4 p-md-5">
+                <!-- Alert box for errors -->
+                <div id="alert-container"></div>
+
+                <form action="add_student.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <div class="row g-4">
+                        <!-- Roll Number -->
+                        <div class="col-md-6">
+                            <label for="roll_number" class="form-label">Roll Number *</label>
+                            <input type="text" class="form-control" id="roll_number" name="roll_number" placeholder="e.g. 20IT105" required autocomplete="off">
+                            <div class="invalid-feedback">Roll Number is required.</div>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Rajesh Kumar" required>
+                            <div class="invalid-feedback">Full Name is required.</div>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="col-md-6">
+                            <label for="department" class="form-label">Department *</label>
+                            <input type="text" class="form-control" id="department" name="department" placeholder="e.g. Information Technology" required>
+                            <div class="invalid-feedback">Department is required.</div>
+                        </div>
+
+                        <!-- Year -->
+                        <div class="col-md-6">
+                            <label for="year" class="form-label">Year of Study *</label>
+                            <select class="form-select" id="year" name="year" required>
+                                <option value="" selected disabled>Select Year</option>
+                                <option value="1">I Year</option>
+                                <option value="2">II Year</option>
+                                <option value="3">III Year</option>
+                                <option value="4">IV Year</option>
+                            </select>
+                            <div class="invalid-feedback">Please select the year.</div>
+                        </div>
+
+                        <!-- Room Number -->
+                        <div class="col-md-6">
+                            <label for="room_number" class="form-label">Room Number *</label>
+                            <input type="text" class="form-control" id="room_number" name="room_number" placeholder="e.g. B-302" required>
+                            <div class="invalid-feedback">Room Number is required.</div>
+                        </div>
+
+                        <!-- Hostel Type -->
+                        <div class="col-md-6">
+                            <label for="hostel_type" class="form-label">Hostel Type *</label>
+                            <select class="form-select" id="hostel_type" name="hostel_type" required>
+                                <option value="" selected disabled>Select Hostel Block</option>
+                                <option value="Boys Hostel A">Boys Hostel A</option>
+                                <option value="Boys Hostel B">Boys Hostel B</option>
+                                <option value="Girls Hostel A">Girls Hostel A</option>
+                                <option value="Girls Hostel B">Girls Hostel B</option>
+                            </select>
+                            <div class="invalid-feedback">Please select the hostel type.</div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="e.g. 9876543210" pattern="[0-9]{10}" required>
+                            <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="e.g. rajesh@example.com" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+
+                        <!-- Photo File Upload -->
+                        <div class="col-12">
+                            <label for="photo" class="form-label">Student Photo (Max 2MB, JPG/PNG) *</label>
+                            <input type="file" class="form-control" id="photo" name="photo" accept=".jpg,.jpeg,.png" required>
+                            <div class="invalid-feedback">Please upload a student photo.</div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1 py-3">
+                                <i class="fa-solid fa-user-plus me-2"></i>Register Student
+                            </button>
+                            <button type="reset" class="btn btn-secondary-custom px-4 py-3">
+                                Reset Form
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <script>
+        // Check for URL errors
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            let errorMsg = 'An error occurred during registration.';
+            if (error === 'exists') {
+                errorMsg = 'A student with this Roll Number is already registered.';
+            } else if (error === 'upload') {
+                errorMsg = 'Failed to upload student photo. Make sure file is under 2MB and format is JPG/PNG.';
+            } else if (error === 'db') {
+                errorMsg = 'Database error occurred. Please try again.';
+            } else if (error === 'empty') {
+                errorMsg = 'Please fill out all required fields.';
+            }
+            
+            document.getElementById('alert-container').innerHTML = `
+                <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>${errorMsg}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+        }
+
+        // Try to retrieve admin username dynamically if needed (placeholder fallback)
+        // Check session info or use default
+    </script>
+</body>
+</html>
