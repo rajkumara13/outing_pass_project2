@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand">
+                <i class="fa-solid fa-hotel"></i>
+                <span>Outpass Admin</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view_students.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Students List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add_student.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="apply_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                        <span>Apply Home Pass</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals 
+                            <span id="pending-badge" class="badge bg-warning text-dark rounded-pill ms-1 d-none" style="font-size: 0.7rem;">0</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link-custom">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Reports Panel</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-circle fa-2x"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sidebar-username">Admin</span>
+                        <span style="font-size: 0.75rem;">Administrator</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Dashboard Overview</h1>
+                    <p class="text-secondary mb-0">System status and live occupancy metrics</p>
+                </div>
+                <div class="text-secondary" style="font-size: 0.9rem;" id="current-date-display">
+                    <i class="fa-solid fa-calendar-day me-1"></i> Today
+                </div>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="row g-4 mb-5">
+                <!-- Total Students -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="glass-card stat-card total">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number" id="stat-total">...</h3>
+                                <div class="stat-label">Total Students</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inside Hostel -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="glass-card stat-card inside">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number text-success" id="stat-inside">...</h3>
+                                <div class="stat-label">Students Inside</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outside Hostel -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="glass-card stat-card outside">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number text-danger" id="stat-outside">...</h3>
+                                <div class="stat-label">Students Outside</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-door-open"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Home Pass -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="glass-card stat-card pending">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number text-warning" id="stat-pending">...</h3>
+                                <div class="stat-label">Pending Home Passes</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-house-chimney-crack"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Active Outings List -->
+                <div class="col-lg-7">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h5 fw-bold mb-0">Students Currently Outside (Outing)</h2>
+                            <a href="reports.html" class="btn btn-sm btn-outline-light" style="font-size:0.8rem;">View All</a>
+                        </div>
+                        <div class="table-custom-container">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Roll Number</th>
+                                        <th>Room No</th>
+                                        <th>Exit Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="active-outings-body">
+                                    <tr><td colspan="4" class="text-center text-secondary py-4">Loading active outings...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Logs -->
+                <div class="col-lg-5">
+                    <div class="glass-card p-4 h-100">
+                        <h2 class="h5 fw-bold mb-4">Recent Activity Logs</h2>
+                        <div class="log-list" id="recent-logs-container">
+                            <p class="text-center text-secondary py-4">Loading activity logs...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Display current date
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('current-date-display').innerHTML = `<i class="fa-solid fa-calendar-day me-1"></i> ${new Date().toLocaleDateString(undefined, dateOptions)}`;
+
+            // Load user profile
+            const userStr = localStorage.getItem('outpass_user');
+            if (userStr) {
+                try {
+                    const u = JSON.parse(userStr);
+                    document.getElementById('sidebar-username').innerText = u.username || 'Admin';
+                } catch(e) {}
+            }
+
+            // Logout handler
+            document.getElementById('btn-logout').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    localStorage.removeItem('outpass_token');
+                    localStorage.removeItem('outpass_user');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Fetch live dashboard metrics
+            try {
+                const res = await fetch('/api/reports/dashboard-stats');
+                if (res.status === 401) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const data = await res.json();
+
+                document.getElementById('stat-total').innerText = data.total_students || 0;
+                document.getElementById('stat-inside').innerText = data.inside_students || 0;
+                document.getElementById('stat-outside').innerText = data.outside_students || 0;
+                document.getElementById('stat-pending').innerText = data.pending_home_passes || 0;
+
+                if (data.pending_home_passes > 0) {
+                    const pb = document.getElementById('pending-badge');
+                    pb.innerText = data.pending_home_passes;
+                    pb.classList.remove('d-none');
+                }
+
+                // Render active outings
+                const outingBody = document.getElementById('active-outings-body');
+                if (data.active_outings && data.active_outings.length > 0) {
+                    outingBody.innerHTML = data.active_outings.map(o => `
+                        <tr>
+                            <td>${escapeHtml(o.name)}</td>
+                            <td><span class="badge bg-secondary">${escapeHtml(o.roll_number)}</span></td>
+                            <td>${escapeHtml(o.room_number || '')}</td>
+                            <td>${formatTime(o.exit_time)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    outingBody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-4">No students currently outside on outings.</td></tr>`;
+                }
+
+                // Render recent logs
+                const logsCont = document.getElementById('recent-logs-container');
+                if (data.recent_logs && data.recent_logs.length > 0) {
+                    logsCont.innerHTML = data.recent_logs.map(log => `
+                        <div class="log-item px-0">
+                            <div class="log-details">
+                                <span class="log-action">${escapeHtml(log.action)}</span>
+                                <small class="log-time text-secondary">${formatTime(log.created_at)}</small>
+                                <p class="mb-0 text-secondary mt-1" style="font-size:0.85rem;">${escapeHtml(log.details || '')}</p>
+                            </div>
+                            <div>
+                                <span class="log-user">${escapeHtml(log.user_type)}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    logsCont.innerHTML = `<p class="text-center text-secondary py-4">No recent logs found.</p>`;
+                }
+
+            } catch (err) {
+                console.error("Dashboard data load error:", err);
+            }
+        });
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function formatTime(isoStr) {
+            if (!isoStr) return '-';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+</html>

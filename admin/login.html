@@ -24,7 +24,7 @@
             </div>
 
             <!-- Login form -->
-            <form action="login_process.php" method="POST" class="needs-validation" novalidate>
+            <form id="admin-login-form" class="needs-validation" novalidate>
                 
                 <!-- Error Alert Container -->
                 <div id="error-alert-container"></div>
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3">
+                <button type="submit" id="btn-submit" class="btn btn-primary-custom w-100 py-3 mb-3">
                     <i class="fa-solid fa-right-to-bracket me-2"></i>Login as Admin
                 </button>
 
@@ -61,33 +61,53 @@
     <!-- Global Script -->
     <script src="../js/script.js"></script>
     <script>
-        // Check for URL query params to display alerts
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        if (error) {
-            let errorMsg = 'An error occurred.';
-            let isSuccess = false;
-            
-            if (error === 'invalid') {
-                errorMsg = 'Invalid username or password.';
-            } else if (error === 'loggedout') {
-                errorMsg = 'Successfully logged out.';
-                isSuccess = true;
-            } else if (error === 'unauthorized') {
-                errorMsg = 'Please log in to access the dashboard.';
+        const loginForm = document.getElementById('admin-login-form');
+        const alertBox = document.getElementById('error-alert-container');
+        const submitBtn = document.getElementById('btn-submit');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Logging in...';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role: 'admin' })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    localStorage.setItem('outpass_token', data.access_token);
+                    localStorage.setItem('outpass_user', JSON.stringify(data.user));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alertBox.innerHTML = `
+                        <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-3" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>${data.detail || data.message || 'Invalid username or password.'}
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Login as Admin';
+                }
+            } catch (err) {
+                alertBox.innerHTML = `
+                    <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-3" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Failed to reach server. Please check your connection.
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i>Login as Admin';
             }
-            
-            const alertClass = isSuccess ? 'alert-success border-success text-light' : 'alert-danger border-danger text-light';
-            const iconClass = isSuccess ? 'fa-circle-check text-success' : 'fa-triangle-exclamation text-danger';
-            
-            const alertHtml = `
-                <div class="alert ${alertClass} bg-opacity-10 alert-dismissible fade show mb-3" role="alert">
-                    <i class="fa-solid ${iconClass} me-2"></i>${errorMsg}
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-            document.getElementById('error-alert-container').innerHTML = alertHtml;
-        }
+        });
     </script>
 </body>
 </html>

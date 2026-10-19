@@ -3,7 +3,7 @@
 /**
  * Initializes and starts the camera scanner.
  * @param {string} containerId - The ID of the HTML div container for the scanner.
- * @param {string} redirectUrl - The target base URL (e.g., 'outing.php' or 'check_pass.php').
+ * @param {string} redirectUrl - The target base URL (e.g., 'outing.html' or 'check_pass.html').
  */
 function initializeScanner(containerId, redirectUrl) {
     if (typeof Html5Qrcode === 'undefined') {

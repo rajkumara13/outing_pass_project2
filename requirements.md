@@ -1,37 +1,44 @@
-# System Requirements & Dependencies
+# System Requirements & Specifications
 
-This document details the configuration requirements and system specifications to run the **Student Hostel Outpass Management System** on another machine.
-
----
-
-## 1. Core Server Environment
-* **Web Server:** Apache 2.4+ (Standard in XAMPP / WAMP / Laragon)
-* **PHP Engine:** PHP 7.4 to 8.2+
-* **Database System:** MySQL 5.7+ / MariaDB 10.4+
+This document details the configuration requirements and system specifications to run the upgraded **Student Hostel Outpass Management System (AI-Powered)** on any machine.
 
 ---
 
-## 2. PHP Extension Settings
-Ensure the following extensions are enabled in your PHP configuration (`php.ini`):
-
-1. **`pdo_mysql`** (Required for database interactions):
-   - Make sure `extension=pdo_mysql` is uncommented in your `php.ini`.
-2. **`fileinfo`** (Required for secure student photo mime-type checks):
-   - Make sure `extension=fileinfo` is uncommented.
-3. **`gd`** (Optional, for PNG QR generation):
-   - If `extension=gd` is enabled, the system will output standard `.png` QR codes.
-   - If disabled, the system will dynamically fall back to vector-based `.svg` QR codes (requires no server-side extension).
+## 1. Core Server & Runtime Environment
+* **Python Runtime:** Python 3.10 to 3.12+ (64-bit recommended)
+* **API Framework:** FastAPI 0.110+ & Uvicorn 0.28+
+* **Database Server:** MySQL Server 8.0+ / MariaDB 10.6+ (Managed via MySQL Workbench or command line)
+* **Default Database Name:** `hostel_outpass_ai`
+* **Default Port:** 8000 (FastAPI), 3306 (MySQL)
 
 ---
 
-## 3. Web Directory Permissions
-If deploying on Linux/macOS systems, ensure the server has write permissions to create folders and save files in:
-* `uploads/student_photos/` (for student photos)
-* `assets/qr/` (for generated QR codes)
-* `css/`, `js/`, `webfonts/`, `admin/` (so that `config/setup.php` can download and write offline libraries)
+## 2. Python Packages & AI Dependencies
+
+All dependencies are defined in `requirements.txt`:
+* **Web & API:** `fastapi`, `uvicorn[standard]`, `pydantic`, `python-multipart`
+* **Database Driver:** `mysql-connector-python`
+* **Security & Auth:** `bcrypt`, `pyjwt`, `cryptography`, `python-dotenv`
+* **QR Codes:** `qrcode[pil]`, `pillow`
+* **Document Extraction:** `pymupdf` (PyMuPDF for PDF ingestion)
+* **Vector Search & AI:** `sentence-transformers` (`all-MiniLM-L6-v2`), `faiss-cpu`, `huggingface_hub`, `requests`
 
 ---
 
-## 4. Browser Security & Webcam Scanner Rules
-* **Localhost Testing:** You can run the webcam scanner on `http://localhost/` without any security warnings.
-* **Network Testing (Staging/Production):** Modern web browsers restrict access to camera hardware (Webcam API) to secure origins. When hosting the project on another IP address (e.g., `http://192.168.1.50/` or a custom domain), **you must access it over HTTPS** (`https://...`), otherwise the browser will block the scanner.
+## 3. Database Schema Overview
+The database tables are automatically verified and initialized upon server startup:
+1. **`admin`**: Warden/administrator accounts with bcrypt password hashes.
+2. **`security`**: Gatekeeper personnel accounts.
+3. **`students`**: Registered student records, room numbers, parent contact info, photos, and QR code paths.
+4. **`outing`**: Daily student outing checkout and checkin movements.
+5. **`homepass`**: Multi-day leave requests with approval workflow (Pending, Approved, Rejected).
+6. **`activity_logs`**: System audit trail of all security and administrative operations.
+7. **`rag_documents`**: Uploaded hostel regulation PDFs and handbooks.
+8. **`rag_chunks`**: Segmented text chunks extracted using PyMuPDF for vector indexing.
+9. **`ai_query_logs`**: AI Assistant and tool-calling query audit history.
+
+---
+
+## 4. Hardware & Webcam Scanner Rules
+* **Local Testing (`http://127.0.0.1:8000` or `http://localhost:8000`):** Modern web browsers grant camera access to localhost without SSL.
+* **Network / Multi-device Testing (e.g. tablet at gate on LAN IP):** Modern browsers restrict camera hardware access (`navigator.mediaDevices.getUserMedia`) to secure contexts. When testing across devices on a local area network (LAN), access the gate console via HTTPS or configure Chrome/Edge flags (`chrome://flags/#unsafely-treat-insecure-origin-as-secure`) for the gate machine's IP.

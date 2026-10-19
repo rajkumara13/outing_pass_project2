@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outpass Verification Result - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS Stylesheet -->
+    <link href="../css/style.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .status-container {
+            max-width: 460px;
+            width: 100%;
+        }
+
+        .status-card {
+            border-radius: 24px;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.success-theme {
+            border: 2px solid rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+            background: rgba(11, 28, 23, 0.7);
+        }
+
+        .status-card.failed-theme {
+            border: 2px solid rgba(239, 68, 68, 0.4) !important;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+            background: rgba(28, 11, 11, 0.7);
+        }
+
+        .indicator-icon-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .success-theme .indicator-icon-wrapper {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .failed-theme .indicator-icon-wrapper {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .redirect-countdown {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container animate-fade-in">
+        <div id="status-card" class="glass-card status-card">
+            <div id="icon-wrapper" class="indicator-icon-wrapper">
+                <i id="status-icon" class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <h2 id="main-message" class="fw-bold mb-2 tracking-wide" style="font-size: 1.45rem;">
+                VERIFYING...
+            </h2>
+            <p id="sub-message" class="text-secondary mb-0 px-3"></p>
+
+            <div class="redirect-countdown">
+                <i class="fa-solid fa-spinner fa-spin me-2"></i>Redirecting in <span id="countdown">3</span> seconds...
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status') || 'failed';
+            const error = params.get('error') || '';
+            const isSuccess = status.includes('success');
+
+            const card = document.getElementById('status-card');
+            const icon = document.getElementById('status-icon');
+            const mainMsg = document.getElementById('main-message');
+            const subMsg = document.getElementById('sub-message');
+
+            if (isSuccess) {
+                card.classList.add('success-theme');
+                mainMsg.classList.add('text-success');
+                icon.className = 'fa-solid fa-circle-check';
+
+                if (status === 'success_exit') {
+                    mainMsg.innerText = 'OUTING EXIT APPROVED';
+                    subMsg.innerText = 'Gate exit successfully registered. You may proceed.';
+                } else {
+                    mainMsg.innerText = 'OUTING RETURN REGISTERED';
+                    subMsg.innerText = 'Welcome back! Hostel entry check-in successfully logged.';
+                }
+            } else {
+                card.classList.add('failed-theme');
+                mainMsg.classList.add('text-danger');
+                icon.className = 'fa-solid fa-circle-xmark';
+                mainMsg.innerText = 'ACCESS DENIED';
+
+                if (error === 'student_not_found') {
+                    subMsg.innerText = 'Student Roll Number is not registered in the system.';
+                } else {
+                    subMsg.innerText = 'Verification process failed. Invalid outpass record.';
+                }
+            }
+
+            // Web Audio API tone synthesis
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (isSuccess) {
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.stop(ctx.currentTime + 0.4);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.stop(ctx.currentTime + 0.55);
+                }
+            } catch(e) {}
+
+            // Auto redirect
+            let timeLeft = 3;
+            const countdownEl = document.getElementById('countdown');
+            const redirectUrl = params.get('redirect') || 'scan.html';
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                countdownEl.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    window.location.href = redirectUrl;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

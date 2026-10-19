@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Pass Approvals - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand">
+                <i class="fa-solid fa-hotel"></i>
+                <span>Outpass Admin</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link-custom">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view_students.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Students List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add_student.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="apply_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                        <span>Apply Home Pass</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link-custom">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Reports Panel</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-circle fa-2x"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sidebar-username">Admin</span>
+                        <span style="font-size: 0.75rem;">Administrator</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Home Pass Approvals</h1>
+                    <p class="text-secondary mb-0">Review, approve, or reject student requests for long-term home leave</p>
+                </div>
+                <button class="btn btn-secondary-custom" onclick="loadRequests()">
+                    <i class="fa-solid fa-arrows-rotate me-2"></i>Refresh List
+                </button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Pending requests section -->
+            <div class="glass-card p-4 mb-4">
+                <h2 class="h5 fw-bold mb-3 text-warning">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>Pending Requests Awaiting Review
+                </h2>
+                <div class="table-custom-container">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Room & Block</th>
+                                <th>Leave Dates</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-table-body">
+                            <tr><td colspan="5" class="text-center text-secondary py-4">Loading pending requests...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History section -->
+            <div class="glass-card p-4">
+                <h2 class="h5 fw-bold mb-3 text-secondary">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>Recent Approvals History (Last 10)
+                </h2>
+                <div class="table-custom-container">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Leave Dates</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <tr><td colspan="5" class="text-center text-secondary py-4">Loading history...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRequests();
+
+            document.getElementById('btn-logout').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    localStorage.removeItem('outpass_token');
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+
+        async function loadRequests() {
+            try {
+                // 1. Pending
+                const resP = await fetch('/api/homepass/pending');
+                const dataP = await resP.json();
+                const pBody = document.getElementById('pending-table-body');
+
+                if (dataP.pending_requests && dataP.pending_requests.length > 0) {
+                    pBody.innerHTML = dataP.pending_requests.map(r => `
+                        <tr>
+                            <td>
+                                <strong>${escapeHtml(r.name)}</strong><br>
+                                <span class="badge bg-secondary font-monospace">${escapeHtml(r.roll_number)}</span>
+                            </td>
+                            <td>
+                                ${escapeHtml(r.room_number || '')}<br>
+                                <small class="text-secondary">${escapeHtml(r.hostel_type)}</small>
+                            </td>
+                            <td>
+                                <span class="text-light">${r.leave_date}</span> to <span class="text-light">${r.return_date}</span>
+                            </td>
+                            <td>${escapeHtml(r.reason)}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-success px-3" onclick="processPass(${r.id}, 'approve')">
+                                        <i class="fa-solid fa-check me-1"></i>Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger px-3" onclick="processPass(${r.id}, 'reject')">
+                                        <i class="fa-solid fa-xmark me-1"></i>Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    pBody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">No pending home pass requests found.</td></tr>`;
+                }
+
+                // 2. History
+                const resH = await fetch('/api/homepass/history');
+                const dataH = await resH.json();
+                const hBody = document.getElementById('history-table-body');
+
+                if (dataH.history && dataH.history.length > 0) {
+                    hBody.innerHTML = dataH.history.map(h => {
+                        const badge = h.status === 'Approved'
+                            ? `<span class="badge bg-success bg-opacity-10 text-success border border-success">Approved</span>`
+                            : `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Rejected</span>`;
+                        return `
+                            <tr>
+                                <td>
+                                    <strong>${escapeHtml(h.name)}</strong> (${escapeHtml(h.roll_number)})
+                                </td>
+                                <td>${h.leave_date} to ${h.return_date}</td>
+                                <td>${escapeHtml(h.reason)}</td>
+                                <td>${badge}</td>
+                                <td class="text-secondary">${escapeHtml(h.admin_remarks || '-')}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    hBody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">No approval history found.</td></tr>`;
+                }
+
+            } catch (err) {
+                console.error("Error loading home pass data:", err);
+            }
+        }
+
+        async function processPass(id, action) {
+            const remarks = prompt(`Enter optional remarks for ${action.toUpperCase()}:`, "");
+            if (remarks === null) return; // cancelled
+
+            try {
+                const res = await fetch(`/api/homepass/${id}/action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, remarks })
+                });
+                const d = await res.json();
+                if (res.ok) {
+                    loadRequests();
+                } else {
+                    alert(d.detail || 'Action failed.');
+                }
+            } catch (e) {
+                alert('Connection error.');
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+    </script>
+</body>
+</html>

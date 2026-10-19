@@ -23,13 +23,13 @@
             
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link-custom">
+                    <a href="dashboard.html" class="nav-link-custom">
                         <i class="fa-solid fa-chart-line"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="view_students.php" class="nav-link-custom">
+                    <a href="view_students.html" class="nav-link-custom">
                         <i class="fa-solid fa-user-graduate"></i>
                         <span>Students List</span>
                     </a>
@@ -41,19 +41,19 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="apply_homepass.php" class="nav-link-custom">
+                    <a href="apply_homepass.html" class="nav-link-custom">
                         <i class="fa-solid fa-house-chimney-window"></i>
                         <span>Apply Home Pass</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="approve_homepass.php" class="nav-link-custom">
+                    <a href="approve_homepass.html" class="nav-link-custom">
                         <i class="fa-solid fa-house-circle-check"></i>
                         <span>Home Pass Approvals</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="reports.php" class="nav-link-custom">
+                    <a href="reports.html" class="nav-link-custom">
                         <i class="fa-solid fa-file-contract"></i>
                         <span>Reports Panel</span>
                     </a>
@@ -68,9 +68,9 @@
                         <span style="font-size: 0.75rem;">Administrator</span>
                     </div>
                 </div>
-                <a href="logout.php" class="btn btn-outline-danger w-100 btn-confirm-delete" data-confirm-message="Are you sure you want to logout?">
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
                     <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
-                </a>
+                </button>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
                     <h1 class="h3 fw-bold mb-0">Add New Student</h1>
                     <p class="text-secondary mb-0">Register a student and generate their outpass QR code</p>
                 </div>
-                <a href="view_students.php" class="btn btn-secondary-custom">
+                <a href="view_students.html" class="btn btn-secondary-custom">
                     <i class="fa-solid fa-arrow-left me-2"></i>Back to List
                 </a>
             </div>
@@ -91,12 +91,12 @@
                 <!-- Alert box for errors -->
                 <div id="alert-container"></div>
 
-                <form action="add_student.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <form id="add-student-form" enctype="multipart/form-data" class="needs-validation" novalidate>
                     <div class="row g-4">
                         <!-- Roll Number -->
                         <div class="col-md-6">
                             <label for="roll_number" class="form-label">Roll Number *</label>
-                            <input type="text" class="form-control" id="roll_number" name="roll_number" placeholder="e.g. 20IT105" required autocomplete="off">
+                            <input type="text" class="form-control" id="roll_number" name="roll_number" placeholder="e.g. 20IT105" required autocomplete="off" style="text-transform: uppercase;">
                             <div class="invalid-feedback">Roll Number is required.</div>
                         </div>
 
@@ -170,7 +170,7 @@
 
                         <!-- Buttons -->
                         <div class="col-12 mt-4 d-flex gap-3">
-                            <button type="submit" class="btn btn-primary-custom flex-grow-1 py-3">
+                            <button type="submit" id="btn-submit" class="btn btn-primary-custom flex-grow-1 py-3">
                                 <i class="fa-solid fa-user-plus me-2"></i>Register Student
                             </button>
                             <button type="reset" class="btn btn-secondary-custom px-4 py-3">
@@ -187,32 +187,81 @@
     <script src="../js/bootstrap.bundle.min.js"></script>
     <!-- Global Script -->
     <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
     <script>
-        // Check for URL errors
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        if (error) {
-            let errorMsg = 'An error occurred during registration.';
-            if (error === 'exists') {
-                errorMsg = 'A student with this Roll Number is already registered.';
-            } else if (error === 'upload') {
-                errorMsg = 'Failed to upload student photo. Make sure file is under 2MB and format is JPG/PNG.';
-            } else if (error === 'db') {
-                errorMsg = 'Database error occurred. Please try again.';
-            } else if (error === 'empty') {
-                errorMsg = 'Please fill out all required fields.';
-            }
-            
-            document.getElementById('alert-container').innerHTML = `
-                <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i>${errorMsg}
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
+        // Check session / user display
+        const userStr = localStorage.getItem('outpass_user');
+        if (userStr) {
+            try {
+                const u = JSON.parse(userStr);
+                document.getElementById('sidebar-username').innerText = u.username || 'Admin';
+            } catch(e) {}
         }
 
-        // Try to retrieve admin username dynamically if needed (placeholder fallback)
-        // Check session info or use default
+        // Logout handler
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to logout?')) {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                localStorage.removeItem('outpass_token');
+                localStorage.removeItem('outpass_user');
+                window.location.href = 'login.html';
+            }
+        });
+
+        const form = document.getElementById('add-student-form');
+        const alertBox = document.getElementById('alert-container');
+        const submitBtn = document.getElementById('btn-submit');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const formData = new FormData(form);
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Registering & Generating QR...';
+
+            try {
+                const res = await fetch('/api/students', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alertBox.innerHTML = `
+                        <div class="alert alert-success bg-opacity-10 border-success text-light alert-dismissible fade show mb-4" role="alert">
+                            <i class="fa-solid fa-circle-check text-success me-2"></i>${data.message} QR Pass generated!
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        window.location.href = 'view_students.html';
+                    }, 1500);
+                } else {
+                    alertBox.innerHTML = `
+                        <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>${data.detail || 'Registration failed.'}
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Register Student';
+                }
+            } catch (err) {
+                alertBox.innerHTML = `
+                    <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Connection error. Please try again.
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-user-plus me-2"></i>Register Student';
+            }
+        });
     </script>
 </body>
 </html>

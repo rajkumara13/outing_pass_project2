@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Directory - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand">
+                <i class="fa-solid fa-hotel"></i>
+                <span>Outpass Admin</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link-custom">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view_students.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Students List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add_student.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="apply_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                        <span>Apply Home Pass</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link-custom">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Reports Panel</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-circle fa-2x"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sidebar-username">Admin</span>
+                        <span style="font-size: 0.75rem;">Administrator</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Students Management</h1>
+                    <p class="text-secondary mb-0">Add, edit, delete, and search students or print QR passes</p>
+                </div>
+                <a href="add_student.html" class="btn btn-primary-custom">
+                    <i class="fa-solid fa-user-plus me-2"></i>Add Student
+                </a>
+            </div>
+
+            <!-- Filter and Search toolbar -->
+            <div class="glass-card p-3 mb-4">
+                <form id="filter-form" class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-secondary">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="search-input" class="form-control" placeholder="Search by name, roll no, department...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="hostel-filter" class="form-select">
+                            <option value="">All Blocks</option>
+                            <option value="Boys Hostel A">Boys Hostel A</option>
+                            <option value="Boys Hostel B">Boys Hostel B</option>
+                            <option value="Girls Hostel A">Girls Hostel A</option>
+                            <option value="Girls Hostel B">Girls Hostel B</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select id="status-filter" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="Inside">Inside</option>
+                            <option value="Outside">Outside</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary-custom w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Students List Table -->
+            <div class="glass-card p-4">
+                <div class="table-custom-container">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Roll Number</th>
+                                <th>Name</th>
+                                <th>Dept & Year</th>
+                                <th>Room & Hostel</th>
+                                <th>Status</th>
+                                <th>QR Pass</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body">
+                            <tr><td colspan="8" class="text-center text-secondary py-4">Loading students...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Preview Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content glass-card border-secondary text-center p-4">
+                <h5 class="fw-bold mb-1" id="qr-modal-name">Student Name</h5>
+                <p class="badge bg-secondary mb-3" id="qr-modal-roll">ROLL NUMBER</p>
+                <div class="p-3 bg-white rounded-3 d-inline-block mx-auto mb-3 shadow">
+                    <img id="qr-modal-img" src="" alt="QR Pass" style="width: 220px; height: 220px; object-fit: contain;">
+                </div>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button class="btn btn-primary-custom px-4" onclick="window.print()">
+                        <i class="fa-solid fa-print me-2"></i>Print Pass
+                    </button>
+                    <button class="btn btn-secondary-custom px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content glass-card border-secondary text-light p-4" style="background: rgba(17, 25, 40, 0.95);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Edit Student Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="edit-student-form" class="needs-validation" novalidate>
+                    <div class="modal-body p-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Roll Number</label>
+                                <input type="text" class="form-control bg-dark text-muted" id="edit-roll" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="edit-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Department *</label>
+                                <input type="text" class="form-control" id="edit-dept" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Year of Study *</label>
+                                <select class="form-select" id="edit-year" required>
+                                    <option value="1">I Year</option>
+                                    <option value="2">II Year</option>
+                                    <option value="3">III Year</option>
+                                    <option value="4">IV Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Room Number *</label>
+                                <input type="text" class="form-control" id="edit-room" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Hostel Block *</label>
+                                <select class="form-select" id="edit-hostel" required>
+                                    <option value="Boys Hostel A">Boys Hostel A</option>
+                                    <option value="Boys Hostel B">Boys Hostel B</option>
+                                    <option value="Girls Hostel A">Girls Hostel A</option>
+                                    <option value="Girls Hostel B">Girls Hostel B</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="edit-phone" pattern="[0-9]{10}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="edit-email" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Update Photo (Optional)</label>
+                                <input type="file" class="form-control" id="edit-photo" accept=".jpg,.jpeg,.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="submit" class="btn btn-primary-custom px-4">Save Changes</button>
+                        <button type="button" class="btn btn-secondary-custom px-3" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
+    <script>
+        let currentStudents = [];
+        const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStudents();
+
+            document.getElementById('filter-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                loadStudents();
+            });
+
+            document.getElementById('btn-logout').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    localStorage.removeItem('outpass_token');
+                    localStorage.removeItem('outpass_user');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            document.getElementById('edit-student-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const roll = document.getElementById('edit-roll').value;
+                const formData = new FormData();
+                formData.append('name', document.getElementById('edit-name').value);
+                formData.append('department', document.getElementById('edit-dept').value);
+                formData.append('year', document.getElementById('edit-year').value);
+                formData.append('room_number', document.getElementById('edit-room').value);
+                formData.append('hostel_type', document.getElementById('edit-hostel').value);
+                formData.append('phone', document.getElementById('edit-phone').value);
+                formData.append('email', document.getElementById('edit-email').value);
+                
+                const photoFile = document.getElementById('edit-photo').files[0];
+                if (photoFile) {
+                    formData.append('photo', photoFile);
+                }
+
+                try {
+                    const res = await fetch(`/api/students/${encodeURIComponent(roll)}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+                    const d = await res.json();
+                    if (res.ok) {
+                        editModal.hide();
+                        showAlert('success', 'Student updated successfully.');
+                        loadStudents();
+                    } else {
+                        alert(d.detail || 'Update failed');
+                    }
+                } catch (err) {
+                    alert('Error saving student details');
+                }
+            });
+        });
+
+        async function loadStudents() {
+            const search = document.getElementById('search-input').value.trim();
+            const hostel = document.getElementById('hostel-filter').value;
+            const status = document.getElementById('status-filter').value;
+
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (hostel) params.append('hostel_type', hostel);
+            if (status) params.append('status', status);
+
+            const tbody = document.getElementById('students-table-body');
+            try {
+                const res = await fetch(`/api/students?${params.toString()}`);
+                const data = await res.json();
+                currentStudents = data.students || [];
+
+                if (currentStudents.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-4">No students found matching your criteria.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = currentStudents.map(s => {
+                    const photoSrc = s.photo ? `/uploads/student_photos/${encodeURIComponent(s.photo)}` : '';
+                    const avatarHtml = photoSrc 
+                        ? `<img src="${photoSrc}" class="student-avatar" alt="Photo" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-user-circle fa-2x text-secondary\\'></i>';">`
+                        : `<i class="fa-solid fa-user-circle fa-2x text-secondary"></i>`;
+
+                    const statusBadge = s.status === 'Inside'
+                        ? `<span class="badge bg-success bg-opacity-10 text-success border border-success">Inside</span>`
+                        : `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Outside</span>`;
+
+                    const qrSrc = s.qr_code ? `/${s.qr_code}` : '';
+
+                    return `
+                        <tr>
+                            <td>${avatarHtml}</td>
+                            <td><span class="badge bg-secondary font-monospace">${escapeHtml(s.roll_number)}</span></td>
+                            <td class="fw-semibold">${escapeHtml(s.name)}</td>
+                            <td>${escapeHtml(s.department)} <small class="text-secondary">(Yr ${s.year})</small></td>
+                            <td>${escapeHtml(s.room_number || '')} <small class="text-secondary">(${escapeHtml(s.hostel_type)})</small></td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="viewQr('${escapeHtml(s.roll_number)}')">
+                                    <i class="fa-solid fa-qrcode me-1"></i>View QR
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-warning me-1" onclick="openEdit('${escapeHtml(s.roll_number)}')">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${escapeHtml(s.roll_number)}', '${escapeHtml(s.name)}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Error loading students from server.</td></tr>`;
+            }
+        }
+
+        function viewQr(roll) {
+            const s = currentStudents.find(x => x.roll_number === roll);
+            if (!s) return;
+            document.getElementById('qr-modal-name').innerText = s.name;
+            document.getElementById('qr-modal-roll').innerText = s.roll_number;
+            document.getElementById('qr-modal-img').src = `/${s.qr_code}`;
+            qrModal.show();
+        }
+
+        function openEdit(roll) {
+            const s = currentStudents.find(x => x.roll_number === roll);
+            if (!s) return;
+            document.getElementById('edit-roll').value = s.roll_number;
+            document.getElementById('edit-name').value = s.name;
+            document.getElementById('edit-dept').value = s.department;
+            document.getElementById('edit-year').value = s.year;
+            document.getElementById('edit-room').value = s.room_number;
+            document.getElementById('edit-hostel').value = s.hostel_type;
+            document.getElementById('edit-phone').value = s.phone;
+            document.getElementById('edit-email').value = s.email;
+            editModal.show();
+        }
+
+        async function deleteStudent(roll, name) {
+            if (confirm(`Are you sure you want to delete student ${name} (${roll})? This will permanently remove their records, photo, and QR pass.`)) {
+                try {
+                    const res = await fetch(`/api/students/${encodeURIComponent(roll)}`, { method: 'DELETE' });
+                    const d = await res.json();
+                    if (res.ok) {
+                        showAlert('success', d.message);
+                        loadStudents();
+                    } else {
+                        showAlert('danger', d.detail || 'Failed to delete student.');
+                    }
+                } catch (e) {
+                    showAlert('danger', 'Error connecting to server.');
+                }
+            }
+        }
+
+        function showAlert(type, msg) {
+            const c = document.getElementById('alert-container');
+            c.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            setTimeout(() => { c.innerHTML = ''; }, 4000);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+    </script>
+</body>
+</html>

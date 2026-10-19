@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Security Console - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand" style="color: var(--accent-blue);">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Outpass Security</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Console Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../outing/scan.html" class="nav-link-custom">
+                        <i class="fa-solid fa-person-walking-arrow-right text-success"></i>
+                        <span>Outing Scan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../homepass/scan.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-chimney-user text-warning"></i>
+                        <span>Home Pass Scan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-shield fa-2x" style="color: var(--accent-blue);"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sec-username">Main Gate Security</span>
+                        <span style="font-size: 0.75rem;">Gate Guard</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Security Gate Console</h1>
+                    <p class="text-secondary mb-0">Monitor gate entries, exits, and student presence logs</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="../outing/scan.html" class="btn btn-success px-3 py-2 fw-semibold">
+                        <i class="fa-solid fa-qrcode me-2"></i>Scan Outing
+                    </a>
+                    <a href="../homepass/scan.html" class="btn btn-warning text-dark px-3 py-2 fw-semibold">
+                        <i class="fa-solid fa-qrcode me-2"></i>Scan Home Pass
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="row g-4 mb-4">
+                <div class="col-sm-4">
+                    <div class="glass-card stat-card inside">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number text-success" id="stat-inside">...</h3>
+                                <div class="stat-label">Students Inside</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="glass-card stat-card outside">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number text-danger" id="stat-outside">...</h3>
+                                <div class="stat-label">Students Outside</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-door-open"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="glass-card stat-card total">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="stat-number" id="stat-total">...</h3>
+                                <div class="stat-label">Total Registered Students</div>
+                            </div>
+                            <div class="stat-icon"><i class="fa-solid fa-id-card"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast Roll Search Box -->
+            <div class="glass-card p-4 mb-4">
+                <h4 class="h5 fw-bold mb-3"><i class="fa-solid fa-magnifying-glass me-2 text-primary"></i>Verify Student by Roll Number</h4>
+                <form id="verify-roll-form" class="row g-3">
+                    <div class="col-md-9">
+                        <input type="text" id="verify-roll-input" class="form-control form-control-lg" placeholder="Enter student Roll Number (e.g. 23ADR045)" style="text-transform: uppercase;" required autocomplete="off">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary-custom w-100 h-100 fs-6">
+                            <i class="fa-solid fa-check me-2"></i>Verify
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Result Card -->
+                <div id="verify-result-card" class="d-none mt-4 p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img id="v-photo" src="" class="student-avatar-lg" alt="Photo" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-user-circle fa-5x text-secondary\\'></i>';">
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="fw-bold mb-1" id="v-name">Student Name</h4>
+                                    <span class="badge bg-secondary font-monospace mb-2" id="v-roll">23ADR045</span>
+                                </div>
+                                <span class="fs-6 badge" id="v-status-badge">Inside</span>
+                            </div>
+                            <p class="text-secondary small mb-2">
+                                <strong>Department:</strong> <span class="text-light" id="v-dept">AI&DS</span> | 
+                                <strong>Room:</strong> <span class="text-light" id="v-room">116</span> (<span class="text-light" id="v-hostel">Boys Hostel A</span>) | 
+                                <strong>Phone:</strong> <a href="#" id="v-phone" class="text-info"></a>
+                            </p>
+                            <div class="d-flex gap-2">
+                                <a id="v-action-outing" href="#" class="btn btn-sm btn-success">
+                                    <i class="fa-solid fa-person-walking-arrow-right me-1"></i>Process Outing
+                                </a>
+                                <a id="v-action-homepass" href="#" class="btn btn-sm btn-warning text-dark">
+                                    <i class="fa-solid fa-house-chimney-user me-1"></i>Check Home Pass
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grids: Today's Logs and Currently Outside -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 h-100">
+                        <h4 class="h5 fw-bold mb-3"><i class="fa-solid fa-clock-rotate-left me-2 text-info"></i>Today's Gate Entries & Exits</h4>
+                        <div class="table-custom-container">
+                            <table class="table table-custom align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Type</th>
+                                        <th>Exit</th>
+                                        <th>Entry</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="today-logs-body">
+                                    <tr><td colspan="4" class="text-center text-secondary py-4">Loading today's logs...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="h5 fw-bold mb-0 text-danger"><i class="fa-solid fa-door-open me-2"></i>Currently Outside Campus</h4>
+                            <span class="badge bg-danger rounded-pill" id="outside-badge">0</span>
+                        </div>
+                        <div class="table-custom-container">
+                            <table class="table table-custom align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Room & Block</th>
+                                        <th>Phone</th>
+                                        <th>Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="outside-roster-body">
+                                    <tr><td colspan="4" class="text-center text-secondary py-4">All students are inside.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConsoleData();
+
+            document.getElementById('verify-roll-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const roll = document.getElementById('verify-roll-input').value.trim();
+                if (!roll) return;
+
+                const card = document.getElementById('verify-result-card');
+                try {
+                    const res = await fetch(`/api/students/${encodeURIComponent(roll)}`);
+                    if (res.ok) {
+                        const s = await res.json();
+                        card.classList.remove('d-none');
+                        document.getElementById('v-name').innerText = s.name;
+                        document.getElementById('v-roll').innerText = s.roll_number;
+                        document.getElementById('v-dept').innerText = `${s.department} (Yr ${s.year})`;
+                        document.getElementById('v-room').innerText = s.room_number || '-';
+                        document.getElementById('v-hostel').innerText = s.hostel_type || '-';
+                        document.getElementById('v-phone').innerText = s.phone || '-';
+                        document.getElementById('v-phone').href = `tel:${s.phone}`;
+                        document.getElementById('v-photo').src = s.photo ? `/uploads/student_photos/${s.photo}` : '';
+
+                        const b = document.getElementById('v-status-badge');
+                        if (s.status === 'Inside') {
+                            b.className = 'badge bg-success bg-opacity-25 text-success border border-success';
+                            b.innerText = 'Inside Hostel';
+                        } else {
+                            b.className = 'badge bg-danger bg-opacity-25 text-danger border border-danger';
+                            b.innerText = 'Outside Campus';
+                        }
+
+                        document.getElementById('v-action-outing').href = `../outing/outing.html?roll_number=${encodeURIComponent(s.roll_number)}`;
+                        document.getElementById('v-action-homepass').href = `../homepass/check_pass.html?roll_number=${encodeURIComponent(s.roll_number)}`;
+                    } else {
+                        card.classList.remove('d-none');
+                        card.innerHTML = `<div class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Student with Roll Number <strong>${escapeHtml(roll)}</strong> not registered in database.</div>`;
+                    }
+                } catch(err) {
+                    console.error("Verification error:", err);
+                }
+            });
+
+            document.getElementById('btn-logout').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    localStorage.removeItem('outpass_token');
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+
+        async function loadConsoleData() {
+            try {
+                // Stats
+                const resStats = await fetch('/api/reports/dashboard-stats');
+                const dataStats = await resStats.json();
+                document.getElementById('stat-inside').innerText = dataStats.inside_students || 0;
+                document.getElementById('stat-outside').innerText = dataStats.outside_students || 0;
+                document.getElementById('stat-total').innerText = dataStats.total_students || 0;
+                document.getElementById('outside-badge').innerText = dataStats.outside_students || 0;
+
+                // Today's logs
+                const todayStr = new Date().toISOString().split('T')[0];
+                const resDaily = await fetch(`/api/reports/daily?date_str=${todayStr}`);
+                const dataDaily = await resDaily.json();
+                const logBody = document.getElementById('today-logs-body');
+
+                if (dataDaily.records && dataDaily.records.length > 0) {
+                    logBody.innerHTML = dataDaily.records.slice(0, 10).map(r => `
+                        <tr>
+                            <td>
+                                <strong>${escapeHtml(r.name)}</strong> (${escapeHtml(r.roll_number)})
+                            </td>
+                            <td><span class="badge ${r.pass_type === 'Outing' ? 'bg-info text-dark' : 'bg-warning text-dark'}">${r.pass_type}</span></td>
+                            <td>${formatTime(r.exit_time)}</td>
+                            <td>${formatTime(r.entry_time)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    logBody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">No activity recorded today yet.</td></tr>`;
+                }
+
+                // Currently outside roster
+                const resOut = await fetch('/api/outing/active');
+                const dataOut = await resOut.json();
+                const outBody = document.getElementById('outside-roster-body');
+
+                if (dataOut.active_outings && dataOut.active_outings.length > 0) {
+                    outBody.innerHTML = dataOut.active_outings.map(o => `
+                        <tr>
+                            <td>
+                                <strong>${escapeHtml(o.name)}</strong><br>
+                                <span class="badge bg-secondary font-monospace">${escapeHtml(o.roll_number)}</span>
+                            </td>
+                            <td>${escapeHtml(o.room_number || '')} (${escapeHtml(o.hostel_type)})</td>
+                            <td><a href="tel:${o.phone}" class="text-info">${escapeHtml(o.phone || '-')}</a></td>
+                            <td>${escapeHtml(o.reason)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    outBody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">All students are currently inside the hostel.</td></tr>`;
+                }
+
+            } catch (err) {
+                console.error("Error loading console data:", err);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function formatTime(isoStr) {
+            if (!isoStr) return '-';
+            const d = new Date(isoStr);
+            return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+</html>

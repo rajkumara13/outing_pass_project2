@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Home Pass - Student Hostel Outpass System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="../css/all.min.css" rel="stylesheet">
+    <!-- Global CSS and Dashboard CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="portal-brand">
+                <i class="fa-solid fa-hotel"></i>
+                <span>Outpass Admin</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link-custom">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view_students.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Students List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add_student.html" class="nav-link-custom">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="apply_homepass.html" class="nav-link-custom active">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                        <span>Apply Home Pass</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="approve_homepass.html" class="nav-link-custom">
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>Home Pass Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link-custom">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Reports Panel</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="d-flex align-items-center gap-2 px-2 text-secondary mb-3">
+                    <i class="fa-solid fa-user-circle fa-2x"></i>
+                    <div class="d-flex flex-column" style="line-height: 1.2;">
+                        <span class="text-light" style="font-size: 0.9rem; font-weight:600;" id="sidebar-username">Admin</span>
+                        <span style="font-size: 0.75rem;">Administrator</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content animate-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-0">Apply Home Pass</h1>
+                    <p class="text-secondary mb-0">Submit a Home Pass outpass on behalf of a student</p>
+                </div>
+                <a href="dashboard.html" class="btn btn-secondary-custom">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+
+            <div class="glass-card p-4 p-md-5">
+                <div id="alert-container"></div>
+
+                <form id="apply-homepass-form" class="needs-validation" novalidate>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Student Roll Number *</label>
+                            <input type="text" class="form-control" id="roll_number" placeholder="e.g. 23ADR045" required autocomplete="off" style="text-transform: uppercase;">
+                            <div class="invalid-feedback">Roll Number is required.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Initial Pass Status *</label>
+                            <select class="form-select" id="status" required>
+                                <option value="Approved" selected>Approved (Active immediately)</option>
+                                <option value="Pending">Pending (Requires warden review)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Leave Start Date *</label>
+                            <input type="date" class="form-control" id="leave_date" required>
+                            <div class="invalid-feedback">Leave Date is required.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Return Date *</label>
+                            <input type="date" class="form-control" id="return_date" required>
+                            <div class="invalid-feedback">Return Date is required.</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Detailed Leave Reason *</label>
+                            <textarea class="form-control" id="reason" rows="3" placeholder="Provide reason for student's leave..." required></textarea>
+                            <div class="invalid-feedback">Reason is required.</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Admin Remarks (Optional)</label>
+                            <input type="text" class="form-control" id="remarks" placeholder="Add any specific instructions or approvals...">
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-3">
+                            <button type="submit" id="btn-submit" class="btn btn-primary-custom flex-grow-1 py-3">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Create Student Home Pass
+                            </button>
+                            <button type="reset" class="btn btn-secondary-custom px-4 py-3">Reset Form</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <!-- Global Script -->
+    <script src="../js/script.js"></script>
+    <!-- AI Outpass Assistant Floating Widget -->
+    <script src="../js/ai_assistant.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('apply-homepass-form');
+            const alertBox = document.getElementById('alert-container');
+            const submitBtn = document.getElementById('btn-submit');
+
+            // Default leave_date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('leave_date').value = today;
+
+            document.getElementById('btn-logout').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    localStorage.removeItem('outpass_token');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+
+                const roll_number = document.getElementById('roll_number').value.trim();
+                const leave_date = document.getElementById('leave_date').value;
+                const return_date = document.getElementById('return_date').value;
+                const reason = document.getElementById('reason').value.trim();
+                const status = document.getElementById('status').value;
+                const remarks = document.getElementById('remarks').value.trim();
+
+                if (leave_date > return_date) {
+                    alertBox.innerHTML = `
+                        <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Return date must be on or after leave date.
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Submitting...';
+
+                try {
+                    const res = await fetch('/api/homepass/apply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ roll_number, leave_date, return_date, reason, status, remarks })
+                    });
+                    const d = await res.json();
+                    if (res.ok && d.success) {
+                        alertBox.innerHTML = `
+                            <div class="alert alert-success bg-opacity-10 border-success text-light alert-dismissible fade show mb-4">
+                                <i class="fa-solid fa-circle-check text-success me-2"></i>${d.message}
+                            </div>
+                        `;
+                        form.reset();
+                        document.getElementById('leave_date').value = today;
+                    } else {
+                        alertBox.innerHTML = `
+                            <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4">
+                                <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>${d.detail || 'Failed to create pass.'}
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                            </div>
+                        `;
+                    }
+                } catch (err) {
+                    alertBox.innerHTML = `
+                        <div class="alert alert-danger bg-opacity-10 border-danger text-light alert-dismissible fade show mb-4">
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Connection error. Please try again.
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Create Student Home Pass';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
